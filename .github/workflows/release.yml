@@ -60,7 +60,18 @@ jobs:
         run: npm run runtime:download
 
       - name: Build NSIS installer
-        run: npm run build:win
+        env:
+          ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npm run build:win 2>&1 | Tee-Object "build.log"
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -ne 0) {
+            Get-Content "build.log" -Tail 80 | ForEach-Object {
+              Write-Host "::error::$_"
+            }
+            exit $exitCode
+          }
 
       - name: Generate SHA256 checksum
         run: |
