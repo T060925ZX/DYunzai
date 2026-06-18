@@ -1,0 +1,4 @@
+node_modules/
+dist/
+runtime/win-x64/
+*.log

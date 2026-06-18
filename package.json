@@ -1,0 +1,63 @@
+{
+  "name": "dyunzai",
+  "version": "0.9.0",
+  "private": true,
+  "description": "DYunzai desktop launcher and control panel for TRSS-Yunzai",
+  "author": "@Jiaozi",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "runtime:download": "powershell -ExecutionPolicy Bypass -File scripts/download-runtime.ps1",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "redis": "^4.7.1",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "electron": "^42.3.3",
+    "electron-builder": "^26.15.0"
+  },
+  "build": {
+    "appId": "com.dyunzai.desktop",
+    "productName": "DYunzai",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.cjs",
+      "runtime-manager.js",
+      "redis-manager.js",
+      "instance-manager.js",
+      "market-manager.js",
+      "schema-manager.js",
+      "base-config-schemas.js",
+      "assets/**/*",
+      "renderer/**/*",
+      "THIRD_PARTY_NOTICES.md",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "runtime/win-x64",
+        "to": "runtime/win-x64"
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "assets/favicon.ico",
+      "target": "nsis",
+      "artifactName": "DYunzai-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

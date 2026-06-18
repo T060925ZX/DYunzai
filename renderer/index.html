@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; frame-src http://localhost:* http://127.0.0.1:*" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DYunzai</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-frame">
+      <header class="titlebar">
+        <div class="titlebar-brand"><img src="../assets/favicon.ico" alt="" /><span>DYunzai</span></div>
+        <div class="window-controls">
+          <button id="minimizeWindow" aria-label="最小化"><span data-icon="minimize"></span></button>
+          <button id="maximizeWindow" aria-label="最大化"><span data-icon="maximize"></span></button>
+          <button id="closeWindow" class="close" aria-label="关闭"><span data-icon="close"></span></button>
+        </div>
+      </header>
+
+      <div class="app-shell">
+        <aside class="sidebar">
+          <nav>
+            <button class="nav-item active" data-page="overview"><i data-icon="home"></i><span>首页</span></button>
+            <button class="nav-item" data-page="console"><i data-icon="terminal"></i><span>控制台</span></button>
+            <div class="nav-label">配置</div>
+            <button class="nav-item" data-page="baseConfig"><i data-icon="sliders"></i><span>基础配置</span></button>
+            <button class="nav-item" data-page="pluginConfig"><i data-icon="settings"></i><span>插件配置</span></button>
+            <div class="nav-label">扩展</div>
+            <button class="nav-item" data-page="plugins"><i data-icon="puzzle"></i><span>插件管理</span></button>
+            <button class="nav-item" data-page="market"><i data-icon="store"></i><span>插件市场</span></button>
+            <button class="nav-item" data-page="jsPlugins"><i data-icon="code"></i><span>JS 插件管理</span></button>
+            <button class="nav-item" data-page="dependencies"><i data-icon="package"></i><span>依赖管理</span></button>
+            <button id="guobaNavItem" class="nav-item" data-page="guoba" hidden><i data-icon="panel"></i><span>锅巴面板</span></button>
+            <div class="nav-label">工具</div>
+            <button class="nav-item" data-page="database"><i data-icon="database"></i><span>数据库</span></button>
+            <button class="nav-item" data-page="files"><i data-icon="folder"></i><span>文件管理</span></button>
+            <button class="nav-item" data-page="settings"><i data-icon="settings"></i><span>设置</span></button>
+          </nav>
+          <div class="sidebar-status">
+            <span id="statusDot" class="status-dot"></span>
+            <div><strong id="statusText">已停止</strong><span id="statusDetail">等待启动</span></div>
+          </div>
+          <div class="sidebar-credit">@Jiaozi</div>
+        </aside>
+
+        <main class="workspace">
+          <header class="page-header">
+            <div><h1 id="pageTitle">首页</h1><p id="instancePath">正在读取实例...</p></div>
+            <div class="top-actions">
+              <button id="stopButton" class="button ghost"><span data-icon="stop"></span>停止</button>
+              <button id="restartButton" class="button secondary"><span data-icon="rotate"></span>重启</button>
+              <button id="startButton" class="button primary"><span data-icon="play"></span>启动 Yunzai</button>
+            </div>
+          </header>
+
+          <section id="overviewPage" class="page active">
+            <div class="hero-card">
+              <div><span class="eyebrow">TRSS-YUNZAI</span><h2 id="heroTitle">你的机器人控制台已就绪</h2><p>运行、配置、插件与文件都由桌面客户端原生管理。</p></div>
+              <div class="runtime-orb"><span id="runtimeText">OFF</span></div>
+            </div>
+            <div class="stats-grid">
+              <article class="stat-card"><span>进程状态</span><strong id="processStatus">已停止</strong><small id="processPid">PID -</small></article>
+              <article class="stat-card"><span>内置运行时</span><strong id="runtimeStatus">正在检测</strong><small id="runtimeDetail">Node · pnpm · Redis · FFmpeg · Git</small></article>
+              <article class="stat-card"><span>运行时间</span><strong id="uptime">00:00:00</strong><small id="restartHint">自动重启已启用</small></article>
+            </div>
+            <div class="content-grid">
+              <article class="panel"><div class="panel-heading"><div><span class="eyebrow">ENVIRONMENT</span><h3>环境检查</h3></div><button id="refreshEnvironment" class="text-button">重新检测</button></div><div id="environmentList" class="environment-list"></div></article>
+              <article class="panel quick-panel">
+                <div class="panel-heading"><div><span class="eyebrow">QUICK ACTIONS</span><h3>常用操作</h3></div></div>
+                <button id="installFrameworkButton" class="quick-action"><span>自动安装 Yunzai</span><small id="frameworkInstallHint">下载框架并安装依赖</small></button>
+                <button class="quick-action" data-open-page="baseConfig"><span>基础配置</span><small>卡片式参数管理</small></button>
+                <button id="openDirectoryButton" class="quick-action"><span>打开实例目录</span><small>Windows 资源管理器</small></button>
+                <button id="installDependenciesButton" class="quick-action"><span>安装项目依赖</span><small>使用内置 pnpm</small></button>
+              </article>
+            </div>
+          </section>
+
+          <section id="consolePage" class="page console-page">
+            <div class="console-toolbar"><div><strong>实时控制台</strong><span id="consoleCount">0 条日志</span></div><button id="clearLogsButton" class="text-button"><span data-icon="trash"></span>清空日志</button></div>
+            <div id="consoleOutput" class="console-output"></div>
+            <form id="commandForm" class="command-form"><span data-icon="terminal"></span><input id="commandInput" autocomplete="off" placeholder="输入 Yunzai 控制台命令" /><button class="button primary"><span data-icon="send"></span>发送</button></form>
+          </section>
+
+          <section id="baseConfigPage" class="page split-page">
+            <aside class="section-sidebar"><div class="section-title">配置管理</div><div id="baseConfigList" class="vertical-list"></div></aside>
+            <div class="section-content">
+              <div class="content-title"><div><h2 id="baseConfigTitle">基础配置</h2><p id="baseConfigDescription">选择左侧配置分类</p></div><div><button id="refreshBaseConfig" class="button ghost">刷新</button><button id="saveBaseConfig" class="button primary" disabled>保存</button></div></div>
+              <div id="baseConfigForm" class="settings-card empty-state">请选择配置项</div>
+            </div>
+          </section>
+
+          <section id="pluginConfigPage" class="page split-page">
+            <aside class="section-sidebar plugin-sidebar"><div class="section-title">可配置插件</div><input id="pluginConfigSearch" class="compact-search" placeholder="搜索插件" /><div id="pluginConfigList" class="vertical-list"></div></aside>
+            <div class="section-content">
+              <div class="content-title"><div><h2 id="pluginConfigTitle">插件配置</h2><p id="pluginConfigDescription">选择左侧插件读取 guoba.support.js</p></div><button id="savePluginWorkspace" class="button primary" disabled>保存配置</button></div>
+              <div class="settings-card plugin-config-card">
+                <div id="pluginConfigTabs" class="config-tabs plugin-subtabs"></div>
+                <div id="pluginSchemaForm" class="plugin-schema-body empty-state">请选择一个插件</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="pluginsPage" class="page scroll-page">
+            <div class="page-toolbar toolbar-end"><button id="refreshPluginsButton" class="button ghost">刷新已安装插件</button></div>
+            <div id="pluginList" class="plugin-grid"></div>
+          </section>
+
+          <section id="marketPage" class="page scroll-page">
+            <div id="marketToolbar" class="page-toolbar"><input id="marketSearch" placeholder="搜索插件、作者或功能" /><select id="marketCategory"><option value="">全部分类</option></select><button id="refreshMarketButton" class="button ghost">更新索引</button></div>
+            <div class="market-status-tabs">
+              <button class="active" data-market-status="all">全部</button>
+              <button data-market-status="uninstalled">未安装</button>
+              <button data-market-status="installed">已安装</button>
+              <button data-market-status="custom">自定义安装</button>
+            </div>
+            <div id="marketCustomInstall" class="market-custom-install" hidden>
+              <div><strong>从 Git 仓库安装插件</strong><span>安装过程可在 Yunzai 运行时执行，重启 Yunzai 后生效</span></div>
+              <div class="market-custom-controls"><input id="pluginUrlInput" placeholder="输入完整的 Git 插件仓库地址" /><button id="installPluginButton" class="button primary">自定义安装</button></div>
+            </div>
+            <div id="marketMeta" class="page-meta">尚未加载插件市场</div><div id="marketList" class="plugin-grid"></div>
+          </section>
+
+          <section id="jsPluginsPage" class="page scroll-page">
+            <div class="content-title"><div><h2>JS 插件管理</h2><p>管理 plugins/example 下的脚本插件，关闭后重命名为 .js.disable</p></div><button id="refreshJsPlugins" class="button ghost">刷新</button></div>
+            <div class="page-toolbar"><input id="jsPluginSearch" placeholder="搜索 JS 插件名称或文件名" /></div>
+            <div id="jsPluginList" class="list-card"></div>
+          </section>
+
+          <section id="dependenciesPage" class="page scroll-page">
+            <div class="content-title"><div><h2>依赖管理</h2><p>查看 Yunzai package.json 中的全部依赖，并使用内置 pnpm 单独新增</p></div><button id="refreshDependencies" class="button ghost">刷新</button></div>
+            <div class="dependency-install-card">
+              <div><strong>新增依赖</strong><span>执行 pnpm add 依赖名 -w；运行中的 Yunzai 不会被停止，重启后生效</span></div>
+              <div class="dependency-install-controls"><input id="dependencyNameInput" placeholder="例如 lodash 或 lodash@latest" /><button id="addDependencyButton" class="button primary">安装依赖</button></div>
+            </div>
+            <div class="page-toolbar"><input id="dependencySearch" placeholder="搜索依赖名称、版本或类型" /></div>
+            <div id="dependencyMeta" class="page-meta">尚未读取依赖</div>
+            <div id="dependencyList" class="dependency-grid"></div>
+          </section>
+
+          <section id="guobaPage" class="page guoba-page">
+            <div class="guoba-toolbar"><div><strong>锅巴面板</strong><span id="guobaUrlText"></span></div><button id="reloadGuobaButton" class="button ghost">刷新面板</button></div>
+            <div id="guobaOffline" class="guoba-offline">请先启动 Yunzai，锅巴面板将在服务可访问后显示。</div>
+            <webview id="guobaWebview" class="guoba-webview" partition="persist:guoba"></webview>
+          </section>
+
+          <section id="databasePage" class="page database-page">
+            <div class="database-toolbar">
+              <div>
+                <strong>Redis 数据库</strong>
+                <span id="databaseConnection">正在读取连接配置...</span>
+              </div>
+              <div class="database-toolbar-actions">
+                <input id="databaseSearch" placeholder="键名或通配符，例如 Yz:*" />
+                <button id="searchDatabaseButton" class="button secondary">搜索</button>
+                <button id="newDatabaseKeyButton" class="button primary">新建键</button>
+                <button id="refreshDatabaseButton" class="button ghost">刷新</button>
+              </div>
+            </div>
+            <div class="database-layout">
+              <aside class="database-key-pane">
+                <div id="databaseMeta" class="database-meta">尚未连接 Redis</div>
+                <div id="databaseKeyList" class="database-key-list"></div>
+              </aside>
+              <div class="database-editor-pane">
+                <div class="database-editor-fields">
+                  <label><span>键名</span><input id="databaseKeyName" disabled /></label>
+                  <label><span>类型</span><select id="databaseKeyType" disabled><option value="string">String</option><option value="hash">Hash</option><option value="list">List</option><option value="set">Set</option><option value="zset">ZSet</option></select></label>
+                  <label><span>TTL（秒，-1 永久）</span><input id="databaseKeyTtl" type="number" min="-1" value="-1" disabled /></label>
+                </div>
+                <div class="database-editor-heading">
+                  <div><strong id="databaseEditorTitle">选择一个键</strong><span id="databaseEditorHint">集合类型使用 JSON 格式编辑</span></div>
+                  <div>
+                    <button id="deleteDatabaseKeyButton" class="button danger" disabled>删除</button>
+                    <button id="saveDatabaseKeyButton" class="button primary" disabled>保存</button>
+                  </div>
+                </div>
+                <textarea id="databaseValueEditor" class="code-editor database-value-editor" spellcheck="false" disabled></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section id="filesPage" class="page files-page">
+            <div class="file-commandbar">
+              <div id="fileBreadcrumb" class="breadcrumbs"></div>
+              <div class="file-actions"><button id="fileUpButton" aria-label="上一级"><span data-icon="chevronUp"></span></button><button id="newFileButton"><span data-icon="file"></span>新建文件</button><button id="newFolderButton"><span data-icon="folder"></span>新建文件夹</button><button id="refreshFilesButton"><span data-icon="refresh"></span>刷新</button></div>
+            </div>
+            <div class="file-layout">
+              <div class="explorer-pane"><div class="file-columns"><span>名称</span><span>修改日期</span><span>大小</span></div><div id="fileList" class="file-list"></div></div>
+              <div class="file-editor-panel">
+                <div class="content-title compact"><div><h2 id="fileTitle">选择文本文件</h2><p id="fileHint">最大支持 2 MB</p></div><div><button id="renameFileButton" class="button ghost" disabled>重命名</button><button id="deleteFileButton" class="button danger" disabled>移入回收目录</button><button id="saveFileButton" class="button primary" disabled>保存</button></div></div>
+                <textarea id="fileEditor" class="code-editor" spellcheck="false" disabled></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section id="settingsPage" class="page scroll-page">
+            <div class="settings-grid">
+              <article class="settings-card">
+                <div class="card-heading"><h2>实例设置</h2><p>Yunzai 目录和进程行为</p></div>
+                <label class="field-block"><span>Yunzai 安装目录</span><div class="grow-row"><input id="frameworkPathInput" readonly /><button id="chooseFrameworkPathButton" class="button secondary">选择位置</button><button id="installFrameworkSettingsButton" class="button primary">自动安装</button></div></label>
+                <label class="field-block"><span>Yunzai 根目录</span><div class="grow-row"><input id="yunzaiPathInput" readonly /><button id="chooseDirectoryButton" class="button secondary">选择目录</button></div></label>
+                <label class="field-block"><span>Node 可执行文件</span><input id="nodePathInput" placeholder="auto（优先使用内置 Node.js）" /></label>
+                <label class="switch-row"><div><strong>打开客户端后启动 Yunzai</strong><span>仅影响机器人进程</span></div><input id="autoStartInput" class="track-switch" type="checkbox" /></label>
+                <label class="switch-row"><div><strong>异常退出后自动重启</strong><span>带退避和熔断保护</span></div><input id="autoRestartInput" class="track-switch" type="checkbox" /></label>
+                <label class="switch-row"><div><strong>开机启动客户端</strong><span>登录 Windows 后自动打开桌面端</span></div><input id="openAtLoginInput" class="track-switch" type="checkbox" /></label>
+                <label class="switch-row"><div><strong>关闭时最小化到托盘</strong><span>从托盘菜单彻底退出</span></div><input id="minimizeToTrayInput" class="track-switch" type="checkbox" /></label>
+              </article>
+              <article class="settings-card">
+                <div class="card-heading"><h2>界面自定义</h2><p>Windows 11 风格的颜色与材质</p></div>
+                <label class="field-block"><span>主题色</span><div class="color-row"><input id="themeColorInput" type="color" /><input id="themeColorText" /></div></label>
+                <label class="switch-row"><div><strong>启用毛玻璃</strong><span>使用 Windows Mica 材质，关闭可减少资源占用</span></div><input id="glassEnabledInput" class="track-switch" type="checkbox" /></label>
+                <label id="glassOpacityField" class="field-block range-field"><span>毛玻璃透明度 <b id="glassOpacityValue">92%</b></span><input id="glassOpacityInput" type="range" min="70" max="100" step="1" /></label>
+                <label class="switch-row"><div><strong>交互动画</strong><span>页面切换、按钮和卡片过渡</span></div><input id="animationsInput" class="track-switch" type="checkbox" /></label>
+                <div class="theme-preview"><span></span><b>主题预览</b><small>颜色会立即应用</small></div>
+              </article>
+            </div>
+            <button id="saveSettingsButton" class="button primary settings-save">保存全部设置</button>
+          </section>
+        </main>
+      </div>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script src="./icons.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
