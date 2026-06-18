@@ -178,6 +178,7 @@ input:focus,select:focus,textarea:focus { border-color: rgba(var(--primary-rgb),
 .plugin-badge { height:max-content; padding:5px 8px; border-radius:999px; background:rgba(var(--primary-rgb),.12); color:var(--primary); font-size:10px; white-space:nowrap; }
 .card-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }.card-actions .button { min-height:34px; padding:0 14px; font-size:13px; font-weight:500; }
 .plugin-card .card-actions .icon-button { width:36px; min-width:36px; min-height:36px; padding:0; border-radius:8px; }
+.list-row .card-actions .icon-button { width:36px; min-width:36px; min-height:36px; padding:0; border-radius:8px; }
 .icon-button { position:relative; }
 .icon-button::after { content:attr(data-tooltip); position:absolute; right:0; bottom:calc(100% + 8px); z-index:10; width:max-content; max-width:180px; padding:6px 9px; border:1px solid var(--border); border-radius:6px; background:var(--surface-strong); box-shadow:0 8px 22px rgba(0,0,0,.24); color:var(--text-soft); font-size:11px; font-weight:400; line-height:1.2; opacity:0; pointer-events:none; transform:translateY(3px); transition:.15s ease; }
 .icon-button:hover::after,.icon-button:focus-visible::after { opacity:1; transform:none; }

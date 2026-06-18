@@ -1,0 +1,105 @@
+name: Build and Release DYunzai
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dyunzai-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    name: Build Windows installer
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Verify release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          $tagVersion = "${{ github.ref_name }}".TrimStart("v")
+          $packageVersion = node -p "require('./package.json').version"
+          if ($tagVersion -ne $packageVersion) {
+            throw "Tag version $tagVersion does not match package.json version $packageVersion"
+          }
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache bundled runtimes
+        id: runtime-cache
+        uses: actions/cache@v4
+        with:
+          path: runtime/win-x64
+          key: dyunzai-runtime-win-x64-${{ hashFiles('scripts/download-runtime.ps1') }}
+
+      - name: Download bundled runtimes
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run runtime:download
+
+      - name: Build NSIS installer
+        run: npm run build:win
+
+      - name: Generate SHA256 checksum
+        run: |
+          $installer = Get-ChildItem "dist/DYunzai-*-x64.exe" | Select-Object -First 1
+          if (-not $installer) {
+            throw "DYunzai installer was not generated"
+          }
+          $hash = (Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash *$($installer.Name)" | Set-Content "dist/SHA256SUMS.txt" -Encoding ascii
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DYunzai-Windows-${{ github.sha }}
+          path: |
+            dist/DYunzai-*-x64.exe
+            dist/DYunzai-*-x64.exe.blockmap
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Create or update GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $files = @(
+            (Get-ChildItem "dist/DYunzai-*-x64.exe" | Select-Object -First 1).FullName
+            (Get-ChildItem "dist/DYunzai-*-x64.exe.blockmap" | Select-Object -First 1).FullName
+            (Resolve-Path "dist/SHA256SUMS.txt").Path
+          )
+
+          gh release view $env:RELEASE_TAG *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:RELEASE_TAG @files --clobber
+          } else {
+            gh release create $env:RELEASE_TAG @files `
+              --title "DYunzai $env:RELEASE_TAG" `
+              --generate-notes `
+              --verify-tag
+          }

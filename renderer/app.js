@@ -801,11 +801,11 @@ function renderJsPlugins() {
     row.querySelector("span").textContent = `${item.fileName} · ${formatSize(item.size)} · ${formatDate(item.modifiedAt)}`
     const source = document.createElement("button")
     source.className = "button ghost"
-    setButtonContent(source, "code", "查看源码")
+    setIconButton(source, "code", "查看源码")
     source.addEventListener("click", async () => { await switchPage("files"); await openFile(item.path) })
     const toggle = document.createElement("button")
     toggle.className = `button ${item.enabled ? "danger" : "primary"}`
-    setButtonContent(toggle, item.enabled ? "stop" : "play", item.enabled ? "关闭" : "启用")
+    setIconButton(toggle, item.enabled ? "stop" : "play", item.enabled ? "关闭" : "启用")
     toggle.addEventListener("click", async () => {
       await action(() => api.toggleJsPlugin(item.fileName, !item.enabled), item.enabled ? "JS 插件已关闭" : "JS 插件已启用")
       await loadJsPlugins()
