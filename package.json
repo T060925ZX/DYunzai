@@ -10,7 +10,7 @@
     "start": "electron .",
     "runtime:download": "powershell -ExecutionPolicy Bypass -File scripts/download-runtime.ps1",
     "build": "electron-builder",
-    "build:win": "electron-builder --win nsis"
+    "build:win": "electron-builder --win nsis --publish never"
   },
   "dependencies": {
     "acorn": "^8.15.0",
